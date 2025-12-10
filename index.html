@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Video Clips - คลังวิดีโอของฉัน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS: สไตล์พื้นฐาน */
+        :root {
+            --dark-bg: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --accent-color: #007bff; /* สีฟ้าสำหรับการเน้น */
+            --text-color: #ffffff;
+            --light-gray: #ccc;
+            --font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background-color: #0d0d0d;
+            padding: 20px 40px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: var(--accent-color);
+        }
+        .header p {
+            font-size: 1.1em;
+            color: var(--light-gray);
+            margin-top: 10px;
+        }
+
+        /* Video Grid Container */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 40px 40px;
+            max-width: 1200px; /* จำกัดความกว้าง */
+            margin: auto;
+        }
+
+        /* Video Card */
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        /* YouTube Embed */
+        .video-card .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* อัตราส่วน 16:9 */
+            background-color: #000;
+        }
+        .video-card .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Video Info */
+        .video-info {
+            padding: 20px;
+            flex-grow: 1; /* ทำให้ส่วนนี้ขยายเต็มพื้นที่ที่เหลือ */
+        }
+        .video-info h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            color: var(--accent-color);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .video-info p {
+            font-size: 1em;
+            color: var(--light-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .video-grid {
+                grid-template-columns: 1fr;
+                padding: 0 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🎞️ คลังวิดีโอของฉัน</h1>
+        <p>ยินดีต้อนรับสู่คอลเลกชันคลิปวิดีโอส่วนตัว</p>
+    </div>
+
+    <div class="video-grid" id="video-grid-container">
+        <p style="text-align: center; width: 100%; color: var(--light-gray);">กำลังโหลดวิดีโอ...</p>
+    </div>
+
+    <script>
+        // *** ข้อมูลวิดีโอของคุณ ***
+        // แทนที่ด้วย Video ID, ชื่อ และคำอธิบายของวิดีโอของคุณเอง
+        const myVideos = [
+            {
+                id: 'dQw4w9WgXcQ', // ตัวอย่าง: Rick Astley - Never Gonna Give You Up
+                title: 'คลิปที่ 1: การเดินทางของฉัน',
+                description: 'บันทึกการเดินทางที่น่าประทับใจ'
+            },
+            {
+                id: 'LXb3EKWsInQ', // ตัวอย่าง: Charlie Puth - We Don't Talk Anymore
+                title: 'คลิปที่ 2: บทเรียนการเขียนโค้ด',
+                description: 'เรียนรู้พื้นฐานการเขียนเว็บสำหรับมือใหม่'
+            },
+            {
+                id: 'nfWlot6h_JM', // ตัวอย่าง: Lo-Fi Study Music
+                title: 'คลิปที่ 3: สูตรอาหารจานโปรด',
+                description: 'วิธีทำอาหารไทยง่ายๆ ที่บ้าน'
+            },
+            {
+                id: 'kXYiU_JCYtU', // ตัวอย่าง: The Science of Sleep
+                title: 'คลิปที่ 4: เคล็ดลับการถ่ายภาพ',
+                description: 'การตั้งค่ากล้องและการจัดองค์ประกอบภาพ'
+            }
+            // สามารถเพิ่มข้อมูลวิดีโอของคุณได้อีกเรื่อยๆ
+        ];
+
+        const videoGridContainer = document.getElementById('video-grid-container');
+
+        // ฟังก์ชันสร้างและแสดงผล Video Card
+        function displayVideos() {
+            videoGridContainer.innerHTML = ''; // ล้างข้อความ "กำลังโหลด"
+
+            myVideos.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.classList.add('video-card');
+
+                videoCard.innerHTML = `
+                    <div class="video-wrapper">
+                        <iframe 
+                            src="https://www.youtube.com/embed/${video.id}" 
+                            title="${video.title}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3>${video.title}</h3>
+                        <p>${video.description}</p>
+                    </div>
+                `;
+                videoGridContainer.appendChild(videoCard);
+            });
+
+            if (myVideos.length === 0) {
+                videoGridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: var(--light-gray);">ไม่มีวิดีโอให้แสดง</p>';
+            }
+        }
+
+        // เรียกฟังก์ชันแสดงวิดีโอเมื่อหน้าเว็บโหลดเสร็จ
+        displayVideos();
+    </script>
+</body>
+</html>
